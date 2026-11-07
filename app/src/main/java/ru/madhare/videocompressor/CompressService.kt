@@ -96,7 +96,7 @@ class CompressService : Service() {
             }
 
             val (doneBefore, total) = manager.summary()
-            Compressor.compress(this, item.uri, plan, item.hevc, item.height > item.width, tmp) { p ->
+            Compressor.compress(this, item.uri, plan, item.hevc, item.width, item.height, tmp) { p ->
                 manager.update(item.id) { it.copy(progress = p) }
                 val now = System.currentTimeMillis()
                 if (now - lastNotify > 1000) {

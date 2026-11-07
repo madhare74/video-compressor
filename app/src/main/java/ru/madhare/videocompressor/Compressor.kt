@@ -43,7 +43,8 @@ object Compressor {
         uri: Uri,
         plan: Plan,
         hevc: Boolean,
-        portrait: Boolean,
+        srcWidth: Int,
+        srcHeight: Int,
         out: File,
         onProgress: (Float) -> Unit,
     ) = withContext(Dispatchers.Main) {
@@ -83,7 +84,14 @@ object Compressor {
 
             val videoEffects = mutableListOf<Effect>()
             plan.targetShortSide?.let {
-                videoEffects += if (portrait) Presentation.createForWidth(it) else Presentation.createForHeight(it)
+                if (srcWidth > 0 && srcHeight > 0) {
+                    val scale = it.toDouble() / minOf(srcWidth, srcHeight)
+                    val w = even((srcWidth * scale).toInt())
+                    val h = even((srcHeight * scale).toInt())
+                    videoEffects += Presentation.createForWidthAndHeight(w, h, Presentation.LAYOUT_SCALE_TO_FIT)
+                } else {
+                    videoEffects += Presentation.createForHeight(it)
+                }
             }
             videoEffects += FrameDropEffect.createDefaultFrameDropEffect(30f)
 
@@ -113,6 +121,8 @@ object Compressor {
         }
     }
 }
+
+private fun even(v: Int): Int = maxOf(2, v - v % 2)
 
 object Saver {
     const val FOLDER = "Video Compressor"
