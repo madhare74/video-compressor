@@ -84,17 +84,17 @@ class PlannerTest {
 
     @Test
     fun naming_compressedName() {
-        assertEquals("Отпуск_compressed.mp4", Naming.compressedName("Отпуск.mov"))
-        assertEquals("a.b_compressed.mp4", Naming.compressedName("a.b.mp4"))
-        assertEquals("video_compressed.mp4", Naming.compressedName(""))
-        assertEquals("clip_compressed.mp4", Naming.compressedName("clip"))
+        assertEquals("Отпуск_min.mp4", Naming.compressedName("Отпуск.mov", Level.MIN))
+        assertEquals("a.b_mid.mp4", Naming.compressedName("a.b.mp4", Level.MID))
+        assertEquals("video_max.mp4", Naming.compressedName("", Level.MAX))
+        assertEquals("clip_min.mp4", Naming.compressedName("clip", Level.MIN))
     }
 
     @Test
     fun naming_uniqueAddsNumber() {
-        val taken = setOf("a_compressed.mp4", "a_compressed_2.mp4")
+        val taken = setOf("a_min.mp4", "a_min_2.mp4")
         assertEquals("b.mp4", Naming.unique("b.mp4") { it in taken })
-        assertEquals("a_compressed_3.mp4", Naming.unique("a_compressed.mp4") { it in taken })
+        assertEquals("a_min_3.mp4", Naming.unique("a_min.mp4") { it in taken })
     }
 
     @Test

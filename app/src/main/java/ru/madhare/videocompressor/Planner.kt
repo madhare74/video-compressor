@@ -51,10 +51,10 @@ object Planner {
 }
 
 object Naming {
-    /** «Отпуск.mov» → «Отпуск_compressed.mp4». */
-    fun compressedName(original: String): String {
+    /** «Отпуск.mov», MIN → «Отпуск_min.mp4». */
+    fun compressedName(original: String, level: Level): String {
         val base = original.substringBeforeLast('.', original).ifBlank { "video" }
-        return base + "_compressed.mp4"
+        return base + "_" + level.name.lowercase() + ".mp4"
     }
 
     /** Подбирает имя, которого ещё нет: «a.mp4», «a_2.mp4», «a_3.mp4». */

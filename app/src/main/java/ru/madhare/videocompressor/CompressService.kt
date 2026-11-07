@@ -115,7 +115,7 @@ class CompressService : Service() {
                 }
                 return
             }
-            val uri = Saver.save(this, tmp, Naming.compressedName(item.name), item.dateTakenMs)
+            val uri = Saver.save(this, tmp, Naming.compressedName(item.name, item.level), item.dateTakenMs)
             manager.update(item.id) {
                 it.copy(status = Status.Done, progress = 1f, resultUri = uri, resultSize = outSize, message = null)
             }
