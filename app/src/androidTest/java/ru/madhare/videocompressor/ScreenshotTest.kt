@@ -78,7 +78,7 @@ class ScreenshotTest {
     )
 
     private val dir: File by lazy {
-        File(InstrumentationRegistry.getInstrumentation().targetContext.getExternalFilesDir(null), "shots").apply { mkdirs() }
+        File(InstrumentationRegistry.getInstrumentation().targetContext.filesDir, "shots").apply { mkdirs() }
     }
 
     @Test
