@@ -124,7 +124,7 @@ fun MainScreen(state: UiState, actions: Actions) {
                 item("header") {
                     Row(verticalAlignment = Alignment.Top) {
                         Column(Modifier.weight(1f)) {
-                            Text("Video Compressor", style = MaterialTheme.typography.headlineMedium)
+                            OneLineText("Video Compressor", style = MaterialTheme.typography.headlineMedium)
                             Text(
                                 "Выберите видео, уровень сжатия и нажмите «Сжать». Готовые файлы появятся в галерее.",
                                 style = MaterialTheme.typography.bodyMedium,

@@ -87,9 +87,9 @@ class ScreenshotTest {
         rule.setContent {
             val c = cfg
             val d = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(d.density, c.fontScale)) {
+            CompositionLocalProvider(LocalDensity provides Density(1.25f, c.fontScale)) {
                 AppTheme(c.dark) {
-                    Box(Modifier.testTag("frame").width(c.widthDp.dp).height(820.dp)) {
+                    Box(Modifier.testTag("frame").width(c.widthDp.dp).height(1100.dp)) {
                         MainScreen(c.state, Actions())
                     }
                 }
