@@ -135,7 +135,7 @@ class ScreenshotTest {
     }
 
     private fun gv(id: Long, name: String, own: Boolean = false, level: Level? = null, size: Long = 184_000_000) =
-        GalleryVideo(id, Uri.parse("content://x/$id"), name, size, 125_000, 1920, 1080, own, level)
+        GalleryVideo(id, name, size, 125_000, 1920, 1080, own, level)
 
     private val gallery = listOf(
         gv(1, "IMG_0412.mp4"),

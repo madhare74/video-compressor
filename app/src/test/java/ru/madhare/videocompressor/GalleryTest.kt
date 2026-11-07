@@ -1,6 +1,5 @@
 package ru.madhare.videocompressor
 
-import android.net.Uri
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -8,7 +7,7 @@ import org.junit.Test
 
 class GalleryTest {
     private fun v(id: Long, own: Boolean = false, level: Level? = null) = GalleryVideo(
-        id = id, uri = Uri.EMPTY, name = "v$id.mp4", sizeBytes = 100, durationMs = 1000,
+        id = id, name = "v$id.mp4", sizeBytes = 100, durationMs = 1000,
         width = 1280, height = 720, ownResult = own, compressed = level,
     )
 

@@ -93,7 +93,7 @@ private fun App() {
     val thumbLoader: suspend (GalleryVideo) -> Bitmap? = { v ->
         withContext(Dispatchers.IO) {
             try {
-                if (Build.VERSION.SDK_INT >= 29) context.contentResolver.loadThumbnail(v.uri, Size(256, 256), null)
+                if (Build.VERSION.SDK_INT >= 29) context.contentResolver.loadThumbnail(v.uri(), Size(256, 256), null)
                 else @Suppress("DEPRECATION") MediaStore.Video.Thumbnails.getThumbnail(
                     context.contentResolver, v.id, MediaStore.Video.Thumbnails.MINI_KIND, null,
                 )
@@ -164,7 +164,7 @@ private fun App() {
                 onSelectAllNew = { selected = selected + gallery.filter(::isNew).map { it.id } },
                 onClearSelection = { selected = emptySet() },
                 onAdd = {
-                    val uris = gallery.filter { it.id in selected }.map { it.uri }
+                    val uris = gallery.filter { it.id in selected }.map { it.uri() }
                     if (uris.isNotEmpty()) CompressionManager.add(context, uris)
                     showPicker = false
                 },

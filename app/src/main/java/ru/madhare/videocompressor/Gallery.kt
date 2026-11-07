@@ -9,7 +9,6 @@ import android.provider.MediaStore
 /** Видео из галереи телефона для экрана выбора. */
 data class GalleryVideo(
     val id: Long,
-    val uri: Uri,
     val name: String,
     val sizeBytes: Long,
     val durationMs: Long,
@@ -19,7 +18,9 @@ data class GalleryVideo(
     val ownResult: Boolean,
     /** Уровень, на котором это видео уже сжималось; null, если ещё нет. */
     val compressed: Level?,
-)
+) {
+    fun uri(): Uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id)
+}
 
 /** Новое = ещё не сжималось и не является нашим результатом. */
 fun isNew(v: GalleryVideo): Boolean = !v.ownResult && v.compressed == null
@@ -92,7 +93,6 @@ object Gallery {
                 val path = c.getString(6) ?: ""
                 out += GalleryVideo(
                     id = id,
-                    uri = ContentUris.withAppendedId(collection, id),
                     name = name,
                     sizeBytes = size,
                     durationMs = c.getLong(3),
