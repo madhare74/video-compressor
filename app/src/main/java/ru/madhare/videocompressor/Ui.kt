@@ -330,13 +330,7 @@ private fun VideoCard(item: VideoItem, level: Level, hevc: Boolean, busy: Boolea
                         )
                     }
                 }
-                Text(
-                    item.name,
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f),
-                )
+                Spacer(Modifier.weight(1f))
                 if (item.status != Status.Running && !busy) {
                     IconButton(onClick = { actions.onRemove(item.id) }, modifier = Modifier.size(32.dp)) {
                         Icon(Icons.Default.Close, contentDescription = "Убрать из списка")
@@ -344,6 +338,12 @@ private fun VideoCard(item: VideoItem, level: Level, hevc: Boolean, busy: Boolea
                 }
             }
 
+            Text(
+                item.name,
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
             Text(
                 "${Fmt.resolution(item.width, item.height)} · ${Fmt.duration(item.durationMs)} · ${Fmt.size(item.sizeBytes)}",
                 style = MaterialTheme.typography.bodySmall,
