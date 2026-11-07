@@ -35,7 +35,7 @@ class ScreenshotTest {
     private data class Cfg(val state: UiState, val fontScale: Float, val dark: Boolean, val widthDp: Int)
 
     private fun item(
-        id: Long, name: String, status: Status, w: Int = 1920, h: Int = 1080, dur: Long = 125_000,
+        id: Long, name: String, status: Status = Status.Ready, w: Int = 1920, h: Int = 1080, dur: Long = 125_000,
         size: Long = 184_000_000, result: Long = 0, progress: Float = 0f, msg: String? = null,
         level: Level = Level.MIN,
     ) = VideoItem(
