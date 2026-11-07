@@ -133,4 +133,53 @@ class ScreenshotTest {
         rule.onNodeWithText("Сжать (3)").assertIsDisplayed()
         rule.onNodeWithText("Минимальный размер").assertIsDisplayed()
     }
+
+    private fun gv(id: Long, name: String, own: Boolean = false, level: Level? = null, size: Long = 184_000_000) =
+        GalleryVideo(id, Uri.parse("content://x/$id"), name, size, 125_000, 1920, 1080, own, level)
+
+    private val gallery = listOf(
+        gv(1, "IMG_0412.mp4"),
+        gv(2, longName, size = 2_350_000_000),
+        gv(3, "Вертикальное.mp4", level = Level.MIN),
+        gv(4, "IMG_0413_min.mp4", own = true, size = 21_300_000),
+        gv(5, "Праздник.mp4", level = Level.MAX),
+        gv(6, "Новое.mp4"),
+    )
+
+    @Test
+    fun pickerScreens() {
+        var access by mutableStateOf(true)
+        var scale by mutableStateOf(1f)
+        var dark by mutableStateOf(false)
+        var onlyNew by mutableStateOf(true)
+        rule.setContent {
+            val d = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(1.25f, scale)) {
+                AppTheme(dark) {
+                    Box(Modifier.testTag("frame").width(360.dp).fillMaxHeight()) {
+                        PickerScreen(
+                            PickerState(gallery, setOf(1L, 6L), onlyNew, access, false),
+                            PickerActions(),
+                        )
+                    }
+                }
+            }
+        }
+        fun shoot(label: String) {
+            rule.waitForIdle()
+            val bmp = rule.onNodeWithTag("frame").captureToImage().asAndroidBitmap()
+            File(dir, "picker_$label.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 90, it) }
+        }
+        for (sc in listOf(1f, 2f)) {
+            for (dk in listOf(false, true)) {
+                for (only in listOf(true, false)) {
+                    rule.runOnIdle { scale = sc; dark = dk; onlyNew = only; access = true }
+                    shoot("f${(sc * 100).toInt()}_${if (dk) "dark" else "light"}_${if (only) "new" else "all"}")
+                }
+            }
+        }
+        rule.runOnIdle { scale = 1.5f; dark = false; access = false }
+        shoot("noaccess_f150")
+        rule.onNodeWithText("Разрешить доступ").assertIsDisplayed()
+    }
 }

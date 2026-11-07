@@ -15,7 +15,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import android.graphics.Bitmap
+import android.util.Size
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
@@ -37,6 +45,7 @@ private const val MAX_PICK = 50
 @Composable
 private fun App() {
     val context = androidx.compose.ui.platform.LocalContext.current
+    var showPicker by remember { mutableStateOf(false) }
     val items by CompressionManager.items.collectAsStateWithLifecycle()
     val level by CompressionManager.level.collectAsStateWithLifecycle()
     val hevc by CompressionManager.hevc.collectAsStateWithLifecycle()
@@ -50,7 +59,47 @@ private fun App() {
 
     val picker = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(MAX_PICK),
-    ) { uris -> if (uris.isNotEmpty()) CompressionManager.add(context, uris) }
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            CompressionManager.add(context, uris)
+            showPicker = false
+        }
+    }
+
+    val videoPermission =
+        if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_VIDEO
+        else Manifest.permission.READ_EXTERNAL_STORAGE
+    fun hasVideoAccess() =
+        ContextCompat.checkSelfPermission(context, videoPermission) == PackageManager.PERMISSION_GRANTED
+    var hasAccess by remember { mutableStateOf(hasVideoAccess()) }
+    val accessLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { hasAccess = hasVideoAccess() }
+
+    var gallery by remember { mutableStateOf<List<GalleryVideo>>(emptyList()) }
+    var galleryLoading by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf<Set<Long>>(emptySet()) }
+    var onlyNew by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showPicker, hasAccess) {
+        if (showPicker && hasAccess) {
+            galleryLoading = true
+            gallery = withContext(Dispatchers.IO) { Gallery.query(context) }
+            galleryLoading = false
+        }
+    }
+    BackHandler(enabled = showPicker) { showPicker = false }
+
+    val thumbLoader: suspend (GalleryVideo) -> Bitmap? = { v ->
+        withContext(Dispatchers.IO) {
+            try {
+                if (Build.VERSION.SDK_INT >= 29) context.contentResolver.loadThumbnail(v.uri, Size(256, 256), null)
+                else @Suppress("DEPRECATION") MediaStore.Video.Thumbnails.getThumbnail(
+                    context.contentResolver, v.id, MediaStore.Video.Thumbnails.MINI_KIND, null,
+                )
+            } catch (_: Throwable) { null }
+        }
+    }
 
     val permissions = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
@@ -66,7 +115,9 @@ private fun App() {
     val actions = remember {
         Actions(
             onPick = {
-                picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+                hasAccess = hasVideoAccess()
+                selected = emptySet()
+                showPicker = true
             },
             onLevel = CompressionManager::setLevel,
             onHevc = CompressionManager::setHevc,
@@ -104,7 +155,30 @@ private fun App() {
         )
     }
 
-    MainScreen(UiState(items, level, hevc, loading), actions)
+    if (showPicker) {
+        PickerScreen(
+            state = PickerState(gallery, selected, onlyNew, hasAccess, galleryLoading),
+            actions = PickerActions(
+                onToggle = { id -> selected = if (id in selected) selected - id else selected + id },
+                onOnlyNew = { onlyNew = it },
+                onSelectAllNew = { selected = selected + gallery.filter(::isNew).map { it.id } },
+                onClearSelection = { selected = emptySet() },
+                onAdd = {
+                    val uris = gallery.filter { it.id in selected }.map { it.uri }
+                    if (uris.isNotEmpty()) CompressionManager.add(context, uris)
+                    showPicker = false
+                },
+                onCancel = { showPicker = false },
+                onGrant = { accessLauncher.launch(videoPermission) },
+                onSystemPicker = {
+                    picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+                },
+            ),
+            thumb = thumbLoader,
+        )
+    } else {
+        MainScreen(UiState(items, level, hevc, loading), actions)
+    }
 }
 
 private fun openVideo(context: android.content.Context, uri: Uri, action: String) {
