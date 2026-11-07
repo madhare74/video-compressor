@@ -112,7 +112,7 @@ fun PickerScreen(
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
                                 OneLineText(
-                                    "Выбрать все несжатые ($newCount)",
+                                    "Выбрать несжатые ($newCount)",
                                     style = MaterialTheme.typography.labelLarge,
                                 )
                             }

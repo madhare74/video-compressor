@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assertExists
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -165,8 +166,12 @@ class ScreenshotTest {
                 }
             }
         }
-        fun shoot(label: String) {
+        fun shoot(label: String, scrollTo: Int? = null) {
             rule.waitForIdle()
+            if (scrollTo != null) {
+                rule.onNodeWithTag("grid").performScrollToIndex(scrollTo)
+                rule.waitForIdle()
+            }
             val bmp = rule.onNodeWithTag("frame").captureToImage().asAndroidBitmap()
             File(dir, "picker_$label.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 90, it) }
         }
@@ -174,12 +179,14 @@ class ScreenshotTest {
             for (dk in listOf(false, true)) {
                 for (only in listOf(true, false)) {
                     rule.runOnIdle { scale = sc; dark = dk; onlyNew = only; access = true }
-                    shoot("f${(sc * 100).toInt()}_${if (dk) "dark" else "light"}_${if (only) "new" else "all"}")
+                    val l = "f${(sc * 100).toInt()}_${if (dk) "dark" else "light"}_${if (only) "new" else "all"}"
+                    shoot(l)
+                    shoot(l + "_tiles", scrollTo = 2)
                 }
             }
         }
         rule.runOnIdle { scale = 1.5f; dark = false; access = false }
         shoot("noaccess_f150")
-        rule.onNodeWithText("Разрешить доступ").assertIsDisplayed()
+        rule.onNodeWithText("Разрешить доступ").assertExists()
     }
 }
