@@ -319,7 +319,7 @@ private fun VideoCard(item: VideoItem, level: Level, hevc: Boolean, busy: Boolea
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
                 Box(
                     Modifier
-                        .size(width = 88.dp, height = 66.dp)
+                        .size(width = 72.dp, height = 54.dp)
                         .clip(MaterialTheme.shapes.small)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                 ) {
@@ -330,25 +330,25 @@ private fun VideoCard(item: VideoItem, level: Level, hevc: Boolean, busy: Boolea
                         )
                     }
                 }
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(item.name, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(
-                        "${Fmt.resolution(item.width, item.height)} · ${Fmt.duration(item.durationMs)}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        Fmt.size(item.sizeBytes),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+                Text(
+                    item.name,
+                    style = MaterialTheme.typography.titleSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
                 if (item.status != Status.Running && !busy) {
                     IconButton(onClick = { actions.onRemove(item.id) }, modifier = Modifier.size(32.dp)) {
                         Icon(Icons.Default.Close, contentDescription = "Убрать из списка")
                     }
                 }
             }
+
+            Text(
+                "${Fmt.resolution(item.width, item.height)} · ${Fmt.duration(item.durationMs)} · ${Fmt.size(item.sizeBytes)}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             when (item.status) {
                 Status.Running -> LinearProgressIndicator(
