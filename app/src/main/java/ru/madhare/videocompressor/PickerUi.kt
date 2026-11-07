@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -66,7 +67,7 @@ data class PickerActions(
     val onSystemPicker: () -> Unit = {},
 )
 
-private fun span() = { GridItemSpan(maxLineSpan) }
+private val fullSpan: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -88,7 +89,7 @@ fun PickerScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                item(span = span()) {
+                item(span = fullSpan) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         OneLineText("Выбор видео", style = MaterialTheme.typography.headlineMedium)
                         Text(
@@ -130,7 +131,7 @@ fun PickerScreen(
                 }
 
                 if (!state.hasAccess) {
-                    item(span = span()) {
+                    item(span = fullSpan) {
                         Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surface) {
                             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                                 Text("Нужен доступ к видео", style = MaterialTheme.typography.titleMedium)
@@ -147,7 +148,7 @@ fun PickerScreen(
                     }
                 } else {
                     if (state.loading) {
-                        item(span = span()) {
+                        item(span = fullSpan) {
                             Text(
                                 "Загружаю список видео…",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -155,7 +156,7 @@ fun PickerScreen(
                             )
                         }
                     } else if (shown.isEmpty()) {
-                        item(span = span()) {
+                        item(span = fullSpan) {
                             Text(
                                 if (state.onlyNew) "Несжатых видео нет. Выключите фильтр, чтобы увидеть все."
                                 else "На телефоне нет видео.",
