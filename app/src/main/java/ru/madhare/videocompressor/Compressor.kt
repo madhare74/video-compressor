@@ -43,6 +43,7 @@ object Compressor {
         uri: Uri,
         plan: Plan,
         hevc: Boolean,
+        portrait: Boolean,
         out: File,
         onProgress: (Float) -> Unit,
     ) = withContext(Dispatchers.Main) {
@@ -81,7 +82,9 @@ object Compressor {
                 .build()
 
             val videoEffects = mutableListOf<Effect>()
-            plan.targetShortSide?.let { videoEffects += Presentation.createForShortSide(it) }
+            plan.targetShortSide?.let {
+                videoEffects += if (portrait) Presentation.createForWidth(it) else Presentation.createForHeight(it)
+            }
             videoEffects += FrameDropEffect.createDefaultFrameDropEffect(30f)
 
             val edited = EditedMediaItem.Builder(MediaItem.fromUri(uri))
