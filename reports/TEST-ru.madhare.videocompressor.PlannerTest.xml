@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ru.madhare.videocompressor.PlannerTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2026-11-07T10:10:08" hostname="runnervmwuk1x" time="0.081">
+  <properties/>
+  <testcase name="hevc_reducesBitrate" classname="ru.madhare.videocompressor.PlannerTest" time="0.001"/>
+  <testcase name="fmt_size" classname="ru.madhare.videocompressor.PlannerTest" time="0.032"/>
+  <testcase name="fmt_duration" classname="ru.madhare.videocompressor.PlannerTest" time="0.003"/>
+  <testcase name="naming_compressedName" classname="ru.madhare.videocompressor.PlannerTest" time="0.005"/>
+  <testcase name="max_keepsResolutionAndCapsBitrate" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="mid_is720p" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="min_portraitUsesShortSide" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="max_is65PercentOfSource" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="estimate_sizeFromBitrateAndDuration" classname="ru.madhare.videocompressor.PlannerTest" time="0.001"/>
+  <testcase name="fmt_saved" classname="ru.madhare.videocompressor.PlannerTest" time="0.009"/>
+  <testcase name="min_scalesDownFullHdTo360" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="bitrate_neverBelowFloor" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="naming_uniqueAddsNumber" classname="ru.madhare.videocompressor.PlannerTest" time="0.026"/>
+  <testcase name="min_doesNotUpscaleSmallVideo" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="mid_keepsExactly720" classname="ru.madhare.videocompressor.PlannerTest" time="0.0"/>
+  <testcase name="max_unknownBitrateUsesFallback" classname="ru.madhare.videocompressor.PlannerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
