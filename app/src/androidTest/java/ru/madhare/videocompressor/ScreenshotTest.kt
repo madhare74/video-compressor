@@ -3,6 +3,7 @@ package ru.madhare.videocompressor
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.CompositionLocalProvider
@@ -18,6 +19,7 @@ import androidx.compose.ui.test.captureToImage
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -89,7 +91,7 @@ class ScreenshotTest {
             val d = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(1.25f, c.fontScale)) {
                 AppTheme(c.dark) {
-                    Box(Modifier.testTag("frame").width(c.widthDp.dp).height(1100.dp)) {
+                    Box(Modifier.testTag("frame").width(c.widthDp.dp).fillMaxHeight()) {
                         MainScreen(c.state, Actions())
                     }
                 }
@@ -97,14 +99,19 @@ class ScreenshotTest {
         }
         val states = listOf("ready" to ready, "running" to running, "finished" to finished)
         for ((name, st) in states) {
-            for (scale in listOf(1f, 1.3f, 1.5f, 2f)) {
+            for (scale in listOf(1f, 1.5f, 2f)) {
                 for (dark in listOf(false, true)) {
                     for (width in listOf(360, 412)) {
                         rule.runOnIdle { cfg = Cfg(st, scale, dark, width) }
                         rule.waitForIdle()
-                        val bmp = rule.onNodeWithTag("frame").captureToImage().asAndroidBitmap()
-                        val label = "${name}_f${(scale * 100).toInt()}_${if (dark) "dark" else "light"}_${width}"
-                        File(dir, "$label.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 90, it) }
+                        val last = 2 + st.items.size
+                        for ((si, idx) in listOf(0, 3, last).withIndex()) {
+                            rule.onNodeWithTag("list").performScrollToIndex(idx)
+                            rule.waitForIdle()
+                            val bmp = rule.onNodeWithTag("frame").captureToImage().asAndroidBitmap()
+                            val label = "${name}_f${(scale * 100).toInt()}_${if (dark) "dark" else "light"}_${width}_s$si"
+                            File(dir, "$label.png").outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 90, it) }
+                        }
                     }
                 }
             }
